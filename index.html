@@ -25,13 +25,16 @@
     
     <style>
         :root {
-            --bg-main: #fdf1e1;
-            --text-primary: #0b2545;
-            --accent-red: #d7263d;
-            --accent-green: #22b07d;
-            --accent-orange: #f4a261;
-            --text-muted: #5a6c7d;
-            --border-subtle: rgba(11, 37, 69, 0.08);
+            --bg-main: #0a192f;
+            --text-primary: #e6f1ff;
+            --accent-red: #ff4d4d;
+            --accent-green: #64ffda;
+            --accent-orange: #ffb74d;
+            --text-muted: #8892b0;
+            --border-subtle: rgba(255, 255, 255, 0.15);
+            --card-bg: rgba(17, 34, 64, 0.75);
+            --card-border: rgba(100, 255, 218, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.5);
         }
         
         * {
@@ -100,44 +103,46 @@
         }
         
         .threat-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 2.5rem;
-            box-shadow: 0 2px 8px rgba(11, 37, 69, 0.06), 0 8px 24px rgba(11, 37, 69, 0.04);
-            border: 1px solid var(--border-subtle);
+            box-shadow: 0 2px 8px var(--shadow-color), 0 8px 24px var(--shadow-color);
+            border: 1px solid var(--card-border);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .threat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(11, 37, 69, 0.08), 0 16px 48px rgba(11, 37, 69, 0.06);
-            border-color: rgba(11, 37, 69, 0.12);
+            box-shadow: 0 4px 16px var(--shadow-color), 0 16px 48px var(--shadow-color);
+            border-color: var(--accent-green);
         }
         
         .quiz-option {
             padding: 1rem 1.5rem;
             border-radius: 12px;
-            border: 2px solid #0b2545;
+            border: 2px solid var(--text-muted);
             cursor: pointer;
             transition: all 0.3s ease;
-            background: white;
+            background: transparent;
         }
         
         .quiz-option:hover {
             background: var(--accent-green);
-            color: white;
+            color: var(--bg-main);
+            border-color: var(--accent-green);
             transform: translateX(10px);
         }
         
         .quiz-option.selected {
-            background: var(--text-primary);
-            color: white;
+            background: var(--accent-orange);
+            color: var(--bg-main);
+            border-color: var(--accent-orange);
         }
         
         .quiz-option.correct {
             background: var(--accent-green);
-            color: white;
+            color: var(--bg-main);
             border-color: var(--accent-green);
         }
         
@@ -148,8 +153,8 @@
         }
         
         .btn-primary {
-            background: var(--text-primary);
-            color: white;
+            background: var(--accent-green);
+            color: var(--bg-main);
             padding: 1rem 2rem;
             border-radius: 12px;
             border: none;
@@ -160,13 +165,13 @@
         }
         
         .btn-primary:hover {
-            background: var(--accent-green);
+            background: white;
             transform: scale(1.05);
         }
         
         .btn-secondary {
             background: var(--accent-orange);
-            color: white;
+            color: var(--bg-main);
             padding: 0.75rem 1.5rem;
             border-radius: 10px;
             border: none;
@@ -179,30 +184,32 @@
         
         .btn-secondary:hover {
             background: var(--accent-red);
+            color: white;
             transform: scale(1.05);
         }
         
         .badge {
-            background: linear-gradient(135deg, var(--accent-green), var(--text-primary));
-            color: white;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-orange));
+            color: var(--bg-main);
             padding: 2rem;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(34, 176, 125, 0.3);
+            box-shadow: 0 20px 40px rgba(100, 255, 218, 0.2);
         }
         
         .case-study-panel {
-            background: white;
+            background: var(--card-bg);
             border-radius: 15px;
             padding: 1.5rem;
             margin: 1rem 0;
             border-left: 5px solid var(--accent-red);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px var(--shadow-color);
         }
         
         .tip-item {
-            opacity: 0;
-            transform: translateY(20px);
+            /* Temporarily disabled for visibility. */
+            /* opacity: 0; */
+            /* transform: translateY(20px); */
         }
         
         .particles {
@@ -423,7 +430,7 @@
                 <p class="text-lg" style="color: var(--text-muted);">Evaluate your understanding of digital security best practices</p>
             </div>
             
-            <div id="quiz-container" class="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-2xl">
+            <div id="quiz-container" class="max-w-3xl mx-auto rounded-3xl p-8 shadow-2xl" style="background-color: var(--card-bg);">
                 <div id="quiz-content">
                     <!-- Quiz questions will be inserted here -->
                 </div>
@@ -521,40 +528,40 @@
                     <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
                         <div class="text-3xl flex-shrink-0">🔑</div>
                         <div>
-                            <p class="text-lg font-semibold mb-1">Unique Password Management</p>
-                            <p class="text-sm" style="color: var(--text-muted);">Use distinct passwords for each account. Consider a reputable password manager.</p>
+                            <p class="text-lg font-semibold mb-1" style="color: #142d4b;">Unique Password Management</p>
+                            <p class="text-sm" style="color: #142d4b;">Use distinct passwords for each account. Consider a reputable password manager.</p>
                         </div>
                     </div>
                     
                     <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
                         <div class="text-3xl flex-shrink-0">�</div>
                         <div>
-                            <p class="text-lg font-semibold mb-1">Multi-Factor Authentication</p>
-                            <p class="text-sm" style="color: var(--text-muted);">Enable 2FA/MFA on all accounts that support it, especially financial services.</p>
+                            <p class="text-lg font-semibold mb-1" style="color: #142d4b;">Multi-Factor Authentication</p>
+                            <p class="text-sm" style="color: #142d4b;">Enable 2FA/MFA on all accounts that support it, especially financial services.</p>
                         </div>
                     </div>
                     
                     <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
                         <div class="text-3xl flex-shrink-0">🤐</div>
                         <div>
-                            <p class="text-lg font-semibold mb-1">Information Sharing Discipline</p>
-                            <p class="text-sm" style="color: var(--text-muted);">Minimize personal information shared on social platforms and public forums.</p>
+                            <p class="text-lg font-semibold mb-1" style="color: #142d4b;">Information Sharing Discipline</p>
+                            <p class="text-sm" style="color: #142d4b;">Minimize personal information shared on social platforms and public forums.</p>
                         </div>
                     </div>
                     
                     <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
                         <div class="text-3xl flex-shrink-0">🚫</div>
                         <div>
-                            <p class="text-lg font-semibold mb-1">Link and Attachment Verification</p>
-                            <p class="text-sm" style="color: var(--text-muted);">Exercise caution with unexpected links and attachments, even from known contacts.</p>
+                            <p class="text-lg font-semibold mb-1" style="color: #142d4b;">Link and Attachment Verification</p>
+                            <p class="text-sm" style="color: #142d4b;">Exercise caution with unexpected links and attachments, even from known contacts.</p>
                         </div>
                     </div>
                     
                     <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
                         <div class="text-3xl flex-shrink-0">🔄</div>
                         <div>
-                            <p class="text-lg font-semibold mb-1">Regular Software Updates</p>
-                            <p class="text-sm" style="color: var(--text-muted);">Keep operating systems and applications current to patch security vulnerabilities.</p>
+                            <p class="text-lg font-semibold mb-1" style="color: #142d4b;">Regular Software Updates</p>
+                            <p class="text-sm" style="color: #142d4b;">Keep operating systems and applications current to patch security vulnerabilities.</p>
                         </div>
                     </div>
                 </div>
@@ -639,15 +646,12 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 text-center" style="background: var(--text-primary); color: white;">
+    <footer class="py-12 text-center" style="background: var(--bg-main); color: var(--text-primary); border-top: 1px solid var(--card-border);">
         <div class="max-w-4xl mx-auto px-4">
-            <p class="text-base mb-3">
+            <p class="text-base mb-3" style="color: var(--accent-green); font-weight: 600;">
                 Cybersecurity Awareness Initiative 2025
             </p>
-            <p class="text-sm mb-4" style="opacity: 0.7;">
-                Built with Three.js, GSAP, and Tailwind CSS • Open Source
-            </p>
-            <p class="text-xs" style="opacity: 0.6;">
+            <p class="text-sm" style="color: var(--text-muted);">
                 For educational purposes • Stay informed, stay secure
             </p>
         </div>
