@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Are You Cyber Safe? - Interactive Cybersecurity Awareness</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-main: #fdf1e1;
+            --text-primary: #0b2545;
+            --accent-red: #d7263d;
+            --accent-green: #22b07d;
+            --accent-orange: #f4a261;
+            --text-muted: #5a6c7d;
+            --border-subtle: rgba(11, 37, 69, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        
+        .section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+        
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .content-overlay {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .threat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 2px 8px rgba(11, 37, 69, 0.06), 0 8px 24px rgba(11, 37, 69, 0.04);
+            border: 1px solid var(--border-subtle);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .threat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(11, 37, 69, 0.08), 0 16px 48px rgba(11, 37, 69, 0.06);
+            border-color: rgba(11, 37, 69, 0.12);
+        }
+        
+        .quiz-option {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #0b2545;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .quiz-option:hover {
+            background: var(--accent-green);
+            color: white;
+            transform: translateX(10px);
+        }
+        
+        .quiz-option.selected {
+            background: var(--text-primary);
+            color: white;
+        }
+        
+        .quiz-option.correct {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        
+        .quiz-option.wrong {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+        
+        .btn-primary {
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-green);
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: var(--accent-orange);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent-red);
+            transform: scale(1.05);
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, var(--accent-green), var(--text-primary));
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(34, 176, 125, 0.3);
+        }
+        
+        .case-study-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 5px solid var(--accent-red);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tip-item {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-100vh) translateX(100px); }
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--accent-green), 0 0 20px var(--accent-green); }
+            to { text-shadow: 0 0 20px var(--accent-green), 0 0 30px var(--accent-green); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section id="hero" class="section relative overflow-hidden">
+        <div id="globe-canvas" class="canvas-container"></div>
+        <div class="particles" id="particles"></div>
+        
+        <div class="content-overlay text-center">
+            <div class="max-w-5xl mx-auto">
+                <p class="text-sm md:text-base uppercase tracking-wider mb-6 opacity-0" id="hero-label" style="color: var(--accent-green); font-weight: 600;">
+                    Cybersecurity Awareness Initiative 2025
+                </p>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 opacity-0" id="hero-title" style="line-height: 1.1;">
+                    Your Digital Security<br>Starts <span class="orbitron" style="color: var(--accent-green);">Here</span>
+                </h1>
+                <p class="text-lg md:text-2xl mb-6 opacity-0" id="hero-stat1" style="color: var(--text-muted); max-width: 700px; margin-left: auto; margin-right: auto; font-weight: 400;">
+                    In 2024, over <strong style="color: var(--accent-red);">2,200 cyberattacks</strong> occurred daily worldwide—one every 39 seconds.
+                </p>
+                <p class="text-xl md:text-3xl font-semibold opacity-0" id="hero-stat2" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+                    Are you prepared to protect yourself?
+                </p>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <p class="text-sm font-medium mb-2 uppercase tracking-wide" style="color: var(--text-muted);">Scroll to Explore</p>
+            <div class="text-2xl" style="color: var(--accent-green);">↓</div>
+        </div>
+    </section>
+
+    <!-- Reality of Cyber Threats Section -->
+    <section id="threats-reality" class="section relative" style="background: linear-gradient(180deg, #fdf1e1 0%, #0b2545 100%);">
+        <div id="city-canvas" class="canvas-container"></div>
+        
+        <div class="content-overlay text-center">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4 text-white opacity-0" id="reality-title">
+                    Understanding the Threat Landscape
+                </h2>
+                <p class="text-lg md:text-xl text-white opacity-75 mb-16 max-w-3xl mx-auto">
+                    Cyber threats are evolving rapidly. Here are the most common attack vectors targeting individuals and organizations today.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-16">
+                    <div class="threat-card threat-reveal" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(215, 38, 61, 0.2);">
+                        <div class="text-5xl mb-4">📧</div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--accent-red);">Phishing Attacks</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Deceptive communications designed to steal credentials and sensitive information</p>
+                    </div>
+                    
+                    <div class="threat-card threat-reveal" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(215, 38, 61, 0.2);">
+                        <div class="text-5xl mb-4">💾</div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--accent-red);">Data Breaches</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Unauthorized access leading to exposure of personal and financial data</p>
+                    </div>
+                    
+                    <div class="threat-card threat-reveal" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(215, 38, 61, 0.2);">
+                        <div class="text-5xl mb-4">⚠️</div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--accent-red);">Malware</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Malicious software that compromises system integrity and user privacy</p>
+                    </div>
+                </div>
+                
+                <div class="max-w-4xl mx-auto">
+                    <p class="text-xl md:text-2xl text-white font-semibold mb-3 opacity-0" id="reality-stat1">
+                        According to IBM Security, the average data breach in 2024 cost organizations $4.45 million.
+                    </p>
+                    <p class="text-base md:text-lg text-white opacity-0" id="reality-stat2" style="opacity: 0.8;">
+                        Most successful attacks exploit human error—not sophisticated technology.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Know the Threats Section -->
+    <section id="know-threats" class="section">
+        <div class="content-overlay">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-4">Common Cyber Threats</h2>
+                <p class="text-center text-lg mb-16" style="color: var(--text-muted);">
+                    Familiarize yourself with these attack methods to better protect your digital assets.
+                </p>
+                
+                <div class="space-y-5">
+                    <div class="threat-card threat-slide">
+                        <div class="flex items-start gap-6">
+                            <div class="text-5xl flex-shrink-0">🎣</div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">Phishing</h3>
+                                <p class="text-base mb-3" style="color: var(--text-muted);">Fraudulent attempts to obtain sensitive information by masquerading as trustworthy entities in electronic communications.</p>
+                                <p class="font-medium text-sm" style="color: var(--accent-green);">• Verify sender authenticity • Inspect URLs before clicking • Report suspicious emails</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="threat-card threat-slide">
+                        <div class="flex items-start gap-6">
+                            <div class="text-5xl flex-shrink-0">🔓</div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">Credential Compromise</h3>
+                                <p class="text-base mb-3" style="color: var(--text-muted);">Unauthorized access to accounts through stolen, leaked, or weak passwords, often resulting from data breaches.</p>
+                                <p class="font-medium text-sm" style="color: var(--accent-green);">• Use unique passwords per account • Enable 2FA everywhere • Use a password manager</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="threat-card threat-slide">
+                        <div class="flex items-start gap-6">
+                            <div class="text-5xl flex-shrink-0">🔒</div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">Ransomware</h3>
+                                <p class="text-base mb-3" style="color: var(--text-muted);">Malware that encrypts files and demands payment for restoration, causing significant operational disruption.</p>
+                                <p class="font-medium text-sm" style="color: var(--accent-green);">• Maintain offline backups • Avoid untrusted downloads • Keep systems updated</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="threat-card threat-slide">
+                        <div class="flex items-start gap-6">
+                            <div class="text-5xl flex-shrink-0">📶</div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">Rogue Networks</h3>
+                                <p class="text-base mb-3" style="color: var(--text-muted);">Malicious Wi-Fi hotspots that intercept communications to capture credentials and sensitive data.</p>
+                                <p class="font-medium text-sm" style="color: var(--accent-green);">• Use VPN on public networks • Verify network authenticity • Disable auto-connect</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="threat-card threat-slide">
+                        <div class="flex items-start gap-6">
+                            <div class="text-5xl flex-shrink-0">🎭</div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">Social Engineering</h3>
+                                <p class="text-base mb-3" style="color: var(--text-muted);">Psychological manipulation tactics that exploit human trust to gain unauthorized access or information.</p>
+                                <p class="font-medium text-sm" style="color: var(--accent-green);">• Verify requests through alternate channels • Trust your instincts • Limit information sharing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Check If You're Safe Section -->
+    <section id="check-safe" class="section" style="background: linear-gradient(180deg, #fdf1e1 0%, #22b07d 100%);">
+        <div id="vault-canvas" class="canvas-container"></div>
+        
+        <div class="content-overlay text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Security Assessment Tools</h2>
+                <p class="text-lg md:text-xl mb-12 text-white" style="opacity: 0.9;">
+                    Use these trusted third-party services to check if your accounts<br class="hidden md:block"> have been compromised and assess your password security.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-5 mb-8">
+                    <a href="https://haveibeenpwned.com/" target="_blank" class="btn-secondary text-center" style="padding: 1.25rem 1.5rem;">
+                        <div class="font-semibold mb-1">Breach Check</div>
+                        <div class="text-sm opacity-90">Have I Been Pwned</div>
+                    </a>
+                    <a href="https://password.kaspersky.com/" target="_blank" class="btn-secondary text-center" style="padding: 1.25rem 1.5rem;">
+                        <div class="font-semibold mb-1">Password Strength</div>
+                        <div class="text-sm opacity-90">Kaspersky Tool</div>
+                    </a>
+                    <a href="https://passwords.google.com/checkup" target="_blank" class="btn-secondary text-center" style="padding: 1.25rem 1.5rem;">
+                        <div class="font-semibold mb-1">Account Security</div>
+                        <div class="text-sm opacity-90">Google Checkup</div>
+                    </a>
+                </div>
+                
+                <p class="text-sm text-white" style="opacity: 0.7;">
+                    Privacy Notice: These are external services. We do not collect or store any information you provide to them.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cyber Safety Quiz Section -->
+    <section id="quiz" class="section">
+        <div id="control-room-canvas" class="canvas-container"></div>
+        
+        <div class="content-overlay">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Test Your Cybersecurity Knowledge</h2>
+                <p class="text-lg" style="color: var(--text-muted);">Evaluate your understanding of digital security best practices</p>
+            </div>
+            
+            <div id="quiz-container" class="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-2xl">
+                <div id="quiz-content">
+                    <!-- Quiz questions will be inserted here -->
+                </div>
+                
+                <div id="quiz-result" class="hidden text-center">
+                    <div id="badge-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real Attack Case Studies Section -->
+    <section id="case-studies" class="section" style="background: var(--bg-main);">
+        <div class="content-overlay">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-4">Real-World Case Studies</h2>
+                <p class="text-center text-lg mb-16" style="color: var(--text-muted);">
+                    Learn from actual security incidents and understand how to prevent similar attacks.
+                </p>
+                
+                <div class="space-y-12">
+                    <!-- Case Study 1: The Birthday Leak -->
+                    <div class="case-study">
+                        <h3 class="text-2xl font-bold mb-6" style="color: var(--accent-red);">Case Study: Identity Theft Through Social Media</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="case-study-panel">
+                                <h4 class="font-bold text-lg mb-3">The Incident</h4>
+                                <p style="color: var(--text-muted);">A user posted birthday celebration photos with visible personal details including date of birth and location metadata.</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-orange);">
+                                <h4 class="font-bold text-lg mb-3">The Vulnerability</h4>
+                                <p style="color: var(--text-muted);">Attackers aggregated publicly available information to answer security questions and gain account access.</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-green);">
+                                <h4 class="font-bold text-lg mb-3">Prevention</h4>
+                                <p style="color: var(--text-muted);">Limit personal information in public posts. Use non-obvious security questions. Enable 2FA on all accounts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Case Study 2: Free Wi-Fi Trap -->
+                    <div class="case-study">
+                        <h3 class="text-2xl font-bold mb-6" style="color: var(--accent-red);">Case Study: Man-in-the-Middle Attack on Public Wi-Fi</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="case-study-panel">
+                                <h4 class="font-bold text-lg mb-3">The Incident</h4>
+                                <p style="color: var(--text-muted);">User connected to an unsecured public Wi-Fi network and accessed banking services without VPN protection.</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-orange);">
+                                <h4 class="font-bold text-lg mb-3">The Vulnerability</h4>
+                                <p style="color: var(--text-muted);">Malicious actor intercepted unencrypted traffic, capturing login credentials and session tokens.</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-green);">
+                                <h4 class="font-bold text-lg mb-3">Prevention</h4>
+                                <p style="color: var(--text-muted);">Always use VPN on public networks. Avoid sensitive transactions. Verify network legitimacy with venue staff.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Case Study 3: The Fake Job Offer -->
+                    <div class="case-study">
+                        <h3 class="text-2xl font-bold mb-6" style="color: var(--accent-red);">Case Study: Spear Phishing Through Recruitment Fraud</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="case-study-panel">
+                                <h4 class="font-bold text-lg mb-3">The Incident</h4>
+                                <p style="color: var(--text-muted);">Victim received a convincing job offer email requesting personal documents and financial information for "onboarding."</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-orange);">
+                                <h4 class="font-bold text-lg mb-3">The Vulnerability</h4>
+                                <p style="color: var(--text-muted);">Fraudsters used stolen data to open fraudulent accounts and commit identity fraud, causing financial loss.</p>
+                            </div>
+                            <div class="case-study-panel" style="border-color: var(--accent-green);">
+                                <h4 class="font-bold text-lg mb-3">Prevention</h4>
+                                <p style="color: var(--text-muted);">Verify offers through official channels. Never share SSN/Aadhaar via email. Research companies thoroughly before engagement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cyber Safety Tips & Pledge Section -->
+    <section id="tips-pledge" class="section" style="background: linear-gradient(180deg, #fdf1e1 0%, #0b2545 100%);">
+        <div id="shield-canvas" class="canvas-container"></div>
+        
+        <div class="content-overlay">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">Essential Security Practices</h2>
+                <p class="text-center text-lg mb-16 text-white" style="opacity: 0.9;">
+                    Implement these fundamental practices to significantly improve your digital security posture.
+                </p>
+                
+                <div class="max-w-3xl mx-auto space-y-4 mb-16">
+                    <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
+                        <div class="text-3xl flex-shrink-0">🔑</div>
+                        <div>
+                            <p class="text-lg font-semibold mb-1">Unique Password Management</p>
+                            <p class="text-sm" style="color: var(--text-muted);">Use distinct passwords for each account. Consider a reputable password manager.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
+                        <div class="text-3xl flex-shrink-0">�</div>
+                        <div>
+                            <p class="text-lg font-semibold mb-1">Multi-Factor Authentication</p>
+                            <p class="text-sm" style="color: var(--text-muted);">Enable 2FA/MFA on all accounts that support it, especially financial services.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
+                        <div class="text-3xl flex-shrink-0">🤐</div>
+                        <div>
+                            <p class="text-lg font-semibold mb-1">Information Sharing Discipline</p>
+                            <p class="text-sm" style="color: var(--text-muted);">Minimize personal information shared on social platforms and public forums.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
+                        <div class="text-3xl flex-shrink-0">🚫</div>
+                        <div>
+                            <p class="text-lg font-semibold mb-1">Link and Attachment Verification</p>
+                            <p class="text-sm" style="color: var(--text-muted);">Exercise caution with unexpected links and attachments, even from known contacts.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item bg-white rounded-xl p-5 flex items-start gap-4" style="box-shadow: 0 2px 8px rgba(11, 37, 69, 0.08);">
+                        <div class="text-3xl flex-shrink-0">🔄</div>
+                        <div>
+                            <p class="text-lg font-semibold mb-1">Regular Software Updates</p>
+                            <p class="text-sm" style="color: var(--text-muted);">Keep operating systems and applications current to patch security vulnerabilities.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="pledge-btn" class="btn-primary text-lg py-3 px-8">
+                        Commit to Digital Security
+                    </button>
+                    
+                    <div id="pledge-badge" class="hidden mt-12 max-w-md mx-auto badge">
+                        <div class="text-5xl mb-4">🛡️</div>
+                        <h3 class="text-2xl font-bold mb-3">Cybersecurity Pledge 2025</h3>
+                        <p class="mb-4 text-sm">I commit to practicing responsible digital security and protecting my online presence.</p>
+                        <button id="download-badge" class="btn-secondary">Download Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources & Helplines Section -->
+    <section id="resources" class="section">
+        <div class="content-overlay">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-4">Additional Resources</h2>
+                <p class="text-center text-lg mb-12" style="color: var(--text-muted);">Access official cybersecurity resources and reporting mechanisms.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="threat-card">
+                        <h3 class="text-xl font-bold mb-4" style="color: var(--accent-green);">Official Indian Resources</h3>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="https://www.cert-in.org.in/" target="_blank" class="text-base hover:underline flex items-start gap-2" style="color: var(--text-primary);">
+                                    <span class="flex-shrink-0">→</span>
+                                    <span>CERT-In (Indian Computer Emergency Response Team)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://cybercrime.gov.in/" target="_blank" class="text-base hover:underline flex items-start gap-2" style="color: var(--text-primary);">
+                                    <span class="flex-shrink-0">→</span>
+                                    <span>National Cybercrime Reporting Portal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <p class="text-base flex items-start gap-2"><span class="flex-shrink-0">→</span><span>National Helpline: <strong>1930</strong></span></p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="threat-card">
+                        <h3 class="text-xl font-bold mb-4" style="color: var(--accent-green);">Recommended Security Tools</h3>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="https://www.bitdefender.com/" target="_blank" class="text-base hover:underline flex items-start gap-2" style="color: var(--text-primary);">
+                                    <span class="flex-shrink-0">→</span>
+                                    <span>Endpoint Protection (Bitdefender)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://bitwarden.com/" target="_blank" class="text-base hover:underline flex items-start gap-2" style="color: var(--text-primary);">
+                                    <span class="flex-shrink-0">→</span>
+                                    <span>Password Management (Bitwarden)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.privacyguides.org/" target="_blank" class="text-base hover:underline flex items-start gap-2" style="color: var(--text-primary);">
+                                    <span class="flex-shrink-0">→</span>
+                                    <span>Privacy & Security Guidelines</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <a href="https://cybercrime.gov.in/" target="_blank" class="btn-primary text-base px-6 py-3">
+                        Report Cybercrime Incident
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 text-center" style="background: var(--text-primary); color: white;">
+        <div class="max-w-4xl mx-auto px-4">
+            <p class="text-base mb-3">
+                Cybersecurity Awareness Initiative 2025
+            </p>
+            <p class="text-sm mb-4" style="opacity: 0.7;">
+                Built with Three.js, GSAP, and Tailwind CSS • Open Source
+            </p>
+            <p class="text-xs" style="opacity: 0.6;">
+                For educational purposes • Stay informed, stay secure
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/particles.js"></script>
+    <script src="js/globe.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
